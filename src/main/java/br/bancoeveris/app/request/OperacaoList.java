@@ -1,9 +1,9 @@
-package br.bancoeveris.app.spec;
+package br.bancoeveris.app.request;
 
 import java.util.List;
 
-import br.bancoeveris.app.model.BaseResponse;
 import br.bancoeveris.app.model.Operacao;
+import br.bancoeveris.app.response.BaseResponse;
 
 public class OperacaoList extends BaseResponse {
 	

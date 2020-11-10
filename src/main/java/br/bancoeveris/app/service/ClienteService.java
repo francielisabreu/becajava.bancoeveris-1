@@ -7,8 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.bancoeveris.app.repository.*;
-import br.bancoeveris.app.spec.ClienteList;
-import br.bancoeveris.app.spec.ClienteSpec;
+import br.bancoeveris.app.request.ClienteList;
+import br.bancoeveris.app.request.ClienteRequest;
+import br.bancoeveris.app.response.BaseResponse;
+import br.bancoeveris.app.response.ClienteResponse;
 import br.bancoeveris.app.model.*;
 
 @Service
@@ -21,38 +23,38 @@ public class ClienteService {
 		_repository = repository;
 	}
 
-	public BaseResponse inserir(ClienteSpec clienteSpec) {
+	public BaseResponse inserir(ClienteRequest clienteResponse) {
 		Cliente cliente = new Cliente();
 		BaseResponse base = new BaseResponse();
 		base.StatusCode = 400;
 
-		if (clienteSpec.getNome() == "") {
+		if (clienteResponse.getNome() == "") {
 			base.Message = "O nome do cliente não foi preenchido.";
 			return base;
 		}
 
-		if (clienteSpec.getTelefone() == "") {
+		if (clienteResponse.getTelefone() == "") {
 			base.Message = "O telefone do cliente não foi preenchido.";
 			return base;
 		}
-		if (clienteSpec.getCpf() == "") {
+		if (clienteResponse.getCpf() == "") {
 			base.Message = "O Cpf do cliente não foi preenchido.";
 			return base;
 		}
-		if (clienteSpec.getDataNasc() == "") {
+		if (clienteResponse.getDataNasc() == "") {
 			base.Message = "A data de nascimento do cliente não foi preenchido.";
 			return base;
 		}
-		if (clienteSpec.getEndereco() == "") {
+		if (clienteResponse.getEndereco() == "") {
 			base.Message = "O endereço do cliente não foi preenchido";
 			return base;
 		}
 
-		cliente.setNome(clienteSpec.getNome());
-		cliente.setTel(clienteSpec.getTelefone());
-		cliente.setCpf(clienteSpec.getCpf());
-		cliente.setDataNasc(clienteSpec.getDataNasc());
-		cliente.setEndereco(clienteSpec.getEndereco());
+		cliente.setNome(clienteResponse.getNome());
+		cliente.setTel(clienteResponse.getTelefone());
+		cliente.setCpf(clienteResponse.getCpf());
+		cliente.setDataNasc(clienteResponse.getDataNasc());
+		cliente.setEndereco(clienteResponse.getEndereco());
 
 		_repository.save(cliente);
 		base.StatusCode = 201;
@@ -60,25 +62,32 @@ public class ClienteService {
 		return base;
 	}
 
-	public Cliente obter(Long id) {
-		Optional<Cliente> response = _repository.findById(id);		
-
-		if (response == null) {
-			response.get().Message = "Cliente não encontrado";
-			response.get().StatusCode = 404;
-			return response.get();
+	public ClienteResponse obter(Long id) {
+		Optional<Cliente> cliente = _repository.findById(id);		
+		ClienteResponse response = new ClienteResponse();
+		
+		if (cliente == null) {
+			response.Message = "Cliente não encontrado";
+			response.StatusCode = 404;
+			return response;
 		}
+		
+		response.setCpf(cliente.get().getCpf());
+		response.setNome(cliente.get().getNome());
+		response.setTel(cliente.get().getTel());
+		response.setDataNasc(cliente.get().getDataNasc());
+		response.setEndereco(cliente.get().getEndereco());
 
-		response.get().Message = "Cliente obtido com sucesso";
-		response.get().StatusCode = 200;
-		return response.get();
+		response.Message = "Cliente obtido com sucesso";
+		response.StatusCode = 200;
+		return response;
 	}
 
-	public Cliente obterByCpf(String cpf) {
-		Cliente response = _repository.findByCpf(cpf);		
-
-		if (response == null) {
-			response = new Cliente();
+	public ClienteResponse obterByCpf(String cpf) {
+		Cliente cliente = _repository.findByCpf(cpf);		
+		ClienteResponse response = new ClienteResponse();
+		
+		if (cliente == null) {
 			response.Message = "Cliente não encontrado";
 			response.StatusCode = 404;
 			return response;
@@ -101,39 +110,39 @@ public class ClienteService {
 		return response;
 	}
 
-	public BaseResponse atualizar(Long id, ClienteSpec clienteSpec) {
+	public BaseResponse atualizar(Long id, ClienteRequest clienteResponse) {
 		Cliente cliente = new Cliente();
 		BaseResponse base = new BaseResponse();
 		base.StatusCode = 400;
 
-		if (clienteSpec.getNome() == "") {
+		if (clienteResponse.getNome() == "") {
 			base.Message = "O nome do cliente não foi preenchido.";
 			return base;
 		}
 
-		if (clienteSpec.getTelefone() == "") {
+		if (clienteResponse.getTelefone() == "") {
 			base.Message = "O telefone do cliente não foi preenchido.";
 			return base;
 		}
-		if (clienteSpec.getCpf() == "") {
+		if (clienteResponse.getCpf() == "") {
 			base.Message = "O Cpf do cliente não foi preenchido.";
 			return base;
 		}
-		if (clienteSpec.getDataNasc() == "") {
+		if (clienteResponse.getDataNasc() == "") {
 			base.Message = "A data de nascimento do cliente não foi preenchido.";
 			return base;
 		}
-		if (clienteSpec.getEndereco() == "") {
+		if (clienteResponse.getEndereco() == "") {
 			base.Message = "O endereço do cliente não foi preenchido";
 			return base;
 		}
 
 		cliente.setId(id);
-		cliente.setNome(clienteSpec.getNome());
-		cliente.setTel(clienteSpec.getTelefone());
-		cliente.setCpf(clienteSpec.getCpf());
-		cliente.setDataNasc(clienteSpec.getDataNasc());
-		cliente.setEndereco(clienteSpec.getEndereco());
+		cliente.setNome(clienteResponse.getNome());
+		cliente.setTel(clienteResponse.getTelefone());
+		cliente.setCpf(clienteResponse.getCpf());
+		cliente.setDataNasc(clienteResponse.getDataNasc());
+		cliente.setEndereco(clienteResponse.getEndereco());
 
 		_repository.save(cliente);
 		base.StatusCode = 200;

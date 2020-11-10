@@ -6,9 +6,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import br.bancoeveris.app.model.*;
+import br.bancoeveris.app.request.ClienteList;
+import br.bancoeveris.app.request.ClienteRequest;
+import br.bancoeveris.app.response.BaseResponse;
+import br.bancoeveris.app.response.ClienteResponse;
 import br.bancoeveris.app.service.ClienteService;
-import br.bancoeveris.app.spec.ClienteList;
-import br.bancoeveris.app.spec.ClienteSpec;
 
 @RestController
 @RequestMapping("/clientes")
@@ -22,9 +24,9 @@ public class ClienteController extends BaseController {
 	}
 	
 	@PostMapping
-    public ResponseEntity inserir(@RequestBody ClienteSpec clienteSpec) {
+    public ResponseEntity inserir(@RequestBody ClienteRequest clienteRequest) {
 		try {
-			BaseResponse response = _service.inserir(clienteSpec);
+			BaseResponse response = _service.inserir(clienteRequest);
 			return ResponseEntity.status(response.StatusCode).body(response);			
 		} catch (Exception e) {
 			return ResponseEntity.status(errorBase.StatusCode).body(errorBase);
@@ -34,7 +36,7 @@ public class ClienteController extends BaseController {
 	@GetMapping(path = "/{id}")
     public ResponseEntity obter(@PathVariable Long id) {		
 		try {
-			Cliente response = _service.obter(id);
+			ClienteResponse response = _service.obter(id);
 			return ResponseEntity.status(response.StatusCode).body(response);	
 		} catch (Exception e) {
 			return ResponseEntity.status(errorBase.StatusCode).body(errorBase);
@@ -62,9 +64,9 @@ public class ClienteController extends BaseController {
 	}
 	
 	@PutMapping(path = "/{id}")
-	public ResponseEntity atualizar(@RequestBody ClienteSpec clienteSpec, @PathVariable Long id) {
+	public ResponseEntity atualizar(@RequestBody ClienteRequest clienteRequest, @PathVariable Long id) {
 		try {
-			BaseResponse response = _service.atualizar(id, clienteSpec);
+			BaseResponse response = _service.atualizar(id, clienteRequest);
 			return ResponseEntity.status(response.StatusCode).body(response);
 		} catch (Exception e) {
 			return ResponseEntity.status(errorBase.StatusCode).body(errorBase);

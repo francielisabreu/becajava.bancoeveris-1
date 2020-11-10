@@ -5,13 +5,14 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import br.bancoeveris.app.model.BaseResponse;
 import br.bancoeveris.app.model.Cliente;
 import br.bancoeveris.app.model.Conta;
 import br.bancoeveris.app.repository.ContaRepository;
-
-import br.bancoeveris.app.spec.ContaList;
-import br.bancoeveris.app.spec.ContaSpec;
+import br.bancoeveris.app.request.ContaList;
+import br.bancoeveris.app.request.ContaRequest;
+import br.bancoeveris.app.response.BaseResponse;
+import br.bancoeveris.app.response.ClienteResponse;
+import br.bancoeveris.app.response.ContaResponse;
 
 @Service
 public class ContaService {
@@ -26,68 +27,82 @@ public class ContaService {
 		_clienteService = clienteService;
 	}
 
-	public Conta saldo(String hash) {
-		Conta conta = new Conta();
-		conta.StatusCode = 400;
-		
-		List<Conta> lista = _repository.findByHash(hash);
+	public ContaResponse saldo(String hash) {
+		ContaResponse conta = new ContaResponse();
+				
+		Conta contaCheck = _repository.findByHash(hash);
 
-		if (lista.size() == 0)
+		if (contaCheck == null) {
+			conta.StatusCode = 404;
 			conta.Message = "Conta não encontrada!";
+			return conta;
+		}
 		
-		
-		double saldo =  _operacaoService.saldo(lista.get(0).getId());
+		double saldo =  _operacaoService.saldo(conta.getId());
 		conta.setSaldo(saldo);
-		conta.setHash(lista.get(0).getHash());
-		conta.setAgencia(lista.get(0).getAgencia());
-		conta.setNumConta(lista.get(0).getNumConta());
-		conta.setCliente(lista.get(0).getCliente());
+		conta.setHash(conta.getHash());
+		conta.setAgencia(conta.getAgencia());
+		conta.setNumConta(conta.getNumConta());
+		conta.setClienteResponse(conta.getClienteResponse());
 		
 		conta.StatusCode = 200;
 		conta.Message = "Consulta de saldo ok!";
 		return conta;
 	}
 
-	public BaseResponse inserir(ContaSpec contaSpec) {
-		Conta conta = new Conta();
-		BaseResponse base = new BaseResponse();
-		base.StatusCode = 400;
+	public ContaResponse inserir(ContaRequest contaRequest) {
+		ContaResponse response = new ContaResponse();
+		Conta conta = new Conta();		
+		response.StatusCode = 400;
+		
+		boolean existe = true; 
+		
+		while(existe == true) {
+			String randomHash = response.getHash();
+			Conta contaExiste = _repository.findByHash(randomHash);
+			
+			if (contaExiste != null)
+				existe = true;
+			else
+				existe = false;
+		}
+		
+		if (contaRequest.getHash() == "") {
+			response.Message = "O Hash do cliente não foi preenchido.";
+			return response;
+		}
+		if (contaRequest.getNumConta() == "") {
+			response.Message = "O Número da conta do cliente não foi preenchido.";
+			return response;
+		}
+		if (contaRequest.getAgencia() == "") {
+			response.Message = "A agencia do cliente não foi preenchido.";
+			return response;
+		}
+		
 
-		if (contaSpec.getHash() == "") {
-			base.Message = "O Hash do cliente não foi preenchido.";
-			return base;
-		}
-		if (contaSpec.getNumConta() == "") {
-			base.Message = "O Número da conta do cliente não foi preenchido.";
-			return base;
-		}
-		if (contaSpec.getAgencia() == "") {
-			base.Message = "A agencia do cliente não foi preenchido.";
-			return base;
-		}
-
-		conta.setHash(contaSpec.getHash());
-		conta.setNumConta(contaSpec.getNumConta());
-		conta.setAgencia(contaSpec.getAgencia());
-		Cliente cliente = _clienteService.obterByCpf(contaSpec.getCliente().getCpf());
+		response.setHash(contaRequest.getHash());
+		response.setNumConta(contaRequest.getNumConta());
+		response.setAgencia(contaRequest.getAgencia());
+		ClienteResponse cliente = _clienteService.obterByCpf(contaRequest.getCliente().getCpf());
 
 		if (cliente.StatusCode == 404) {
-
-			_clienteService.inserir(contaSpec.getCliente());
-			cliente = _clienteService.obterByCpf(contaSpec.getCliente().getCpf());
-
+			_clienteService.inserir(contaRequest.getCliente());
+			cliente = _clienteService.obterByCpf(contaRequest.getCliente().getCpf());
+			
 		}
-		conta.setCliente(cliente);
+		
+//		conta.setCliente(cliente);
 
 		_repository.save(conta);
-		base.StatusCode = 201;
-		base.Message = "Conta inserida com sucesso.";
-		return base;
+		response.StatusCode = 201;
+		response.Message = "Conta inserida com sucesso.";
+		return response;
 	}
 
-	public Conta obter(Long id) {
+	public ContaResponse obter(Long id) {
 		Optional<Conta> conta = _repository.findById(id);
-		Conta response = new Conta();
+		ContaResponse response = new ContaResponse();
 
 		if (conta == null) {
 			response.Message = "Conta não encontrada";
@@ -97,6 +112,9 @@ public class ContaService {
 
 		response.Message = "Conta obtida com sucesso";
 		response.StatusCode = 200;
+		response.setAgencia(conta.get().getAgencia());
+		response.setNumConta(conta.get().getNumConta());
+		response.setHash(conta.get().getHash());
 		return response;
 	}
 
@@ -112,29 +130,29 @@ public class ContaService {
 //		return response;
 //	}
 
-	public BaseResponse atualizar(Long id, ContaSpec contaSpec) {
+	public BaseResponse atualizar(Long id, ContaRequest contaRequest) {
 		Conta conta = new Conta();
 		BaseResponse base = new BaseResponse();
 		base.StatusCode = 400;
 
-		if (contaSpec.getHash() == "") {
+		if (contaRequest.getHash() == "") {
 			base.Message = "O Hash da conta não foi preenchido.";
 			return base;
 		}
-		if (contaSpec.getNumConta() == "") {
+		if (contaRequest.getNumConta() == "") {
 			base.Message = "O número da conta não foi preenchido";
 			return base;
 		}
-		if (contaSpec.getAgencia() == "") {
+		if (contaRequest.getAgencia() == "") {
 			base.Message = "A agencia da conta não foi preenchida";
 			return base;
 		}
 
 		conta.setId(id);
-		conta.setHash(contaSpec.getHash());
-		conta.setAgencia(contaSpec.getAgencia());
-		conta.setNumConta(contaSpec.getNumConta());
-		_clienteService.inserir(contaSpec.getCliente());
+		conta.setHash(contaRequest.getHash());
+		conta.setAgencia(contaRequest.getAgencia());
+		conta.setNumConta(contaRequest.getNumConta());
+		_clienteService.inserir(contaRequest.getCliente());
 
 		_repository.save(conta);
 		base.StatusCode = 200;

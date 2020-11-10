@@ -13,16 +13,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.bancoeveris.app.model.BaseResponse;
 import br.bancoeveris.app.model.Cliente;
 import br.bancoeveris.app.model.Operacao;
+import br.bancoeveris.app.request.ClienteList;
+import br.bancoeveris.app.request.ClienteRequest;
+import br.bancoeveris.app.request.OperacaoList;
+import br.bancoeveris.app.request.OperacaoRequest;
+import br.bancoeveris.app.request.TransferenciaRequest;
+import br.bancoeveris.app.response.BaseResponse;
 import br.bancoeveris.app.service.ClienteService;
 import br.bancoeveris.app.service.OperacaoService;
-import br.bancoeveris.app.spec.ClienteList;
-import br.bancoeveris.app.spec.ClienteSpec;
-import br.bancoeveris.app.spec.OperacaoList;
-import br.bancoeveris.app.spec.OperacaoSpec;
-import br.bancoeveris.app.spec.TransferenciaSpec;
 
 @RestController
 @RequestMapping("/operacoes")
@@ -36,7 +36,7 @@ public class OperacaoController extends BaseController {
 	}
 	
 	@PostMapping (path = "/depositoSaque")
-    public ResponseEntity inserir(@RequestBody OperacaoSpec operacaoSpec) {
+    public ResponseEntity inserir(@RequestBody OperacaoRequest operacaoSpec) {
 		try {
 			BaseResponse response = _service.inserir(operacaoSpec);
 			return ResponseEntity.status(response.StatusCode).body(response);			
@@ -45,7 +45,7 @@ public class OperacaoController extends BaseController {
 		}
     }
 	@PostMapping (path = "/tranferencia")
-    public ResponseEntity transferencia(@RequestBody TransferenciaSpec transferenciaSpec) {
+    public ResponseEntity transferencia(@RequestBody TransferenciaRequest transferenciaSpec) {
 		try {
 			BaseResponse response = _service.transferencia(transferenciaSpec);
 			return ResponseEntity.status(response.StatusCode).body(response);			
@@ -86,7 +86,7 @@ public class OperacaoController extends BaseController {
 //	}
 //	
 	@PutMapping(path = "/{id}")
-	public ResponseEntity atualizar(@RequestBody OperacaoSpec operacaoSpec, @PathVariable Long id) {
+	public ResponseEntity atualizar(@RequestBody OperacaoRequest operacaoSpec, @PathVariable Long id) {
 		try {
 			BaseResponse response = _service.atualizar(id, operacaoSpec);
 			return ResponseEntity.status(response.StatusCode).body(response);
