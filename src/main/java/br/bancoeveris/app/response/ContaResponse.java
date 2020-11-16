@@ -1,6 +1,6 @@
 package br.bancoeveris.app.response;
 
-import br.bancoeveris.app.model.Cliente;
+
 
 public class ContaResponse extends BaseResponse {
 
@@ -10,9 +10,31 @@ public class ContaResponse extends BaseResponse {
 	private String numConta;
 	private String agencia;
 	private String hash;
-	private ClienteResponse clienteResponse;
+;
 	
+	public ContaResponse(int statusCode, String message) {
+		super();
+		setStatusCode(statusCode);
+		setMessage(message);		
+	}
+	public ContaResponse() {
+		
+	}
+		
+		
+	public ContaResponse(Long id) {
+		super();
+		this.id = id;
+	}
 	
+	public ContaResponse(double saldo, String numConta, String agencia, String hash) {
+		super();
+		this.saldo = saldo;
+		this.numConta = numConta;
+		this.agencia = agencia;
+		this.hash = hash;	
+	}
+
 	public Long getId() {
 		return id;
 	}
@@ -45,11 +67,4 @@ public class ContaResponse extends BaseResponse {
 		this.hash = hash;
 	}
 
-	public ClienteResponse getClienteResponse() {
-		return clienteResponse;
-	}
-	public void setClienteResponse(ClienteResponse clienteResponse) {
-		this.clienteResponse = clienteResponse;
-	}
-	
 }

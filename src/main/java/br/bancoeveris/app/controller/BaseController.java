@@ -7,8 +7,8 @@ public class BaseController {
 	public BaseResponse errorBase = new BaseResponse();
 	
 	public BaseController() {
-		errorBase.StatusCode = 500;
-		errorBase.Message = "Ocorreu um erro inesperado. Contate o administrador";
+		errorBase.setStatusCode(500);
+		errorBase.setMessage("Ocorreu um erro inesperado. Contate o administrador.");
 	}
 
 }

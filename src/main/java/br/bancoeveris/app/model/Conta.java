@@ -14,11 +14,23 @@ public class Conta {
 	private String numConta;
 	private String agencia;
 	private String hash;
+		
+	public Conta() {
+		
+	}
 	
-	@ManyToOne
-    @JoinColumn(name = "IdCliente")
-    private Cliente cliente;
 	
+	public Conta(Long id) {
+		super();
+		this.id = id;
+	}
+	public Conta(double saldo, String numConta, String agencia, String hash) {
+		super();
+		this.saldo = saldo;
+		this.numConta = numConta;
+		this.agencia = agencia;
+		this.hash = hash;
+	}
 
 	public Long getId() {
 		return id;
@@ -59,15 +71,5 @@ public class Conta {
 	public void setHash(String hash) {
 		this.hash = hash;
 	}
-
-	public Cliente getCliente() {
-		return cliente;
-	}
-
-	public void setCliente(Cliente cliente) {
-		cliente = cliente;
-	}
-	
-	
 	
 }

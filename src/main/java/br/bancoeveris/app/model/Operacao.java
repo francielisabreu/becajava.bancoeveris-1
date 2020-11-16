@@ -17,6 +17,23 @@ public class Operacao {
     @ManyToOne
     @JoinColumn(name = "contaDestinoId")
     private Conta contaDestino;
+    
+    public Operacao() {
+    	
+    }    
+
+	public Operacao(Long id) {
+		super();
+		this.id = id;
+	}
+
+	public Operacao(String tipo, double valor, Conta contaOrigem, Conta contaDestino) {
+		super();
+		this.tipo = tipo;
+		this.valor = valor;
+		this.contaOrigem = contaOrigem;
+		this.contaDestino = contaDestino;
+	}
 
 	public Long getId() {
 		return id;

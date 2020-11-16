@@ -24,7 +24,4 @@ public class TransferenciaRequest {
 		this.valor = valor;
 	}
 	
-	
-	
-	
 }

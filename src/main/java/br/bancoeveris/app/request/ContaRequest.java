@@ -1,17 +1,13 @@
 package br.bancoeveris.app.request;
 
-import java.util.UUID;
-
 public class ContaRequest {
 
 	private String hash;
 	private String numConta;
 	private String agencia;
-	private ClienteRequest cliente;
 	
 	public String getHash() {
-        hash = UUID.randomUUID().toString().substring(0, 16);
-        return hash.replace("-", "");
+        return this.hash;
     }
 	public void setHash(String hash) {
 		this.hash = hash;
@@ -28,12 +24,5 @@ public class ContaRequest {
 	public void setAgencia(String agencia) {
 		this.agencia = agencia;
 	}
-	public ClienteRequest getCliente() {
-		return cliente;
-	}
-	public void setCliente(ClienteRequest cliente) {
-		this.cliente = cliente;
-	}
-	
-	
+		
 }

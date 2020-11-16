@@ -1,13 +1,15 @@
 package br.bancoeveris.app.service;
 
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.bancoeveris.app.model.Conta;
 import br.bancoeveris.app.model.Operacao;
 import br.bancoeveris.app.repository.ContaRepository;
 import br.bancoeveris.app.repository.OperacaoRepository;
-import br.bancoeveris.app.request.OperacaoList;
+
 import br.bancoeveris.app.request.OperacaoRequest;
 import br.bancoeveris.app.request.TransferenciaRequest;
 import br.bancoeveris.app.response.BaseResponse;
@@ -15,40 +17,29 @@ import br.bancoeveris.app.response.BaseResponse;
 @Service
 public class OperacaoService {
 
-	final OperacaoRepository _repository;
-	final ContaRepository _contaRepository;
+	@Autowired
+	private OperacaoRepository _repository;
+	@Autowired
+	private ContaRepository _contaRepository;
 
-	public OperacaoService(OperacaoRepository repository, ContaRepository contaRepository) {
-		_repository = repository;
-		_contaRepository = contaRepository;
-	}
+	public BaseResponse inserir(OperacaoRequest request) {
 
-	public BaseResponse inserir(OperacaoRequest operacaoRequest) {
-		Operacao operacao = new Operacao();
-		BaseResponse base = new BaseResponse();
-		base.StatusCode = 400;
-		Conta conta = _contaRepository.findByHash(operacaoRequest.getHash());
+		Conta conta = _contaRepository.findByHash(request.getHash());
 
 		if (conta == null) {
-			base.StatusCode = 404;
-			base.Message = "Conta não encontrada!";
-			return base;
+			return new BaseResponse(400, "Conta não encontrada!");
 		}
-
-		if (operacaoRequest.getTipo() == "") {
-			base.Message = "O Tipo da operação não foi preenchido.";
-			return base;
+		if (request.getTipo() == "") {
+			return new BaseResponse(400, "O Tipo da operação não foi preenchido.");
 		}
-
-		if (operacaoRequest.getValor() == 0) {
-			base.Message = "O valor da operação não foi preenchido.";
-			return base;
+		if (request.getValor() == 0) {
+			return new BaseResponse(400, "O valor da operação não foi preenchido.");
 		}
+		Operacao operacao = new Operacao();
+		operacao.setTipo(request.getTipo());
+		operacao.setValor(request.getValor());
 
-		operacao.setTipo(operacaoRequest.getTipo());
-		operacao.setValor(operacaoRequest.getValor());
-
-		switch (operacaoRequest.getTipo()) {
+		switch (request.getTipo()) {
 
 		case "D":
 			operacao.setContaDestino(conta);
@@ -60,19 +51,12 @@ public class OperacaoService {
 		}
 
 		_repository.save(operacao);
-		base.StatusCode = 201;
-		base.Message = "Operacão inserida com sucesso.";
-		return base;
+		return new BaseResponse(201, "Operacão inserida com sucesso.");
 	}
 
 	public double saldo(Long contaId) {
 
 		double saldo = 0;
-		/*
-		 * Conta contaOrigem = new Conta(); contaOrigem.setId(contaId);
-		 * 
-		 * Conta contaDestino = new Conta(); contaDestino.setId(contaId);
-		 */
 
 		List<Operacao> lista = _repository.findOperacoesPorConta(contaId);
 
@@ -101,72 +85,6 @@ public class OperacaoService {
 		return saldo;
 	}
 
-//	public Conta obter(Long id) {		
-//		Optional<Conta> conta = _repository.findById(id);
-//		Conta response = new Conta();
-//		
-//		
-//		if (conta == null) {
-//			response.Message = "Conta não encontrada";
-//			response.StatusCode = 404;
-//			return response;
-//		}						
-//		
-//		response.Message = "Conta obtida com sucesso";
-//		response.StatusCode = 200;		
-//		return response;
-//	}	
-//
-//	public OperacaoList listar() {
-//
-//		List<Operacao> lista = _repository.findAll();
-//
-//		OperacaoList response = new OperacaoList();
-//		response.setOperacoes(lista);
-//		response.StatusCode = 200;
-//		response.Message = "Operacoes obtidas com sucesso.";
-//
-//		return response;
-//	}
-
-	public BaseResponse atualizar(Long id, OperacaoRequest operacaoRequest) {
-		Operacao operacao = new Operacao();
-		BaseResponse base = new BaseResponse();
-		base.StatusCode = 400;
-
-		if (operacaoRequest.getTipo() == "") {
-			base.Message = "O tipo da Operação não foi preenchido.";
-			return base;
-		}
-
-		if (operacaoRequest.getValor() == 0) {
-			base.Message = "O Valor da operação não foi preenchido.";
-			return base;
-		}
-
-		operacao.setId(id);
-		operacao.setTipo(operacaoRequest.getTipo());
-		operacao.setValor(operacaoRequest.getValor());
-
-		_repository.save(operacao);
-		base.StatusCode = 200;
-		base.Message = "Operacao atualizada com sucesso.";
-		return base;
-	}
-
-//	public BaseResponse deletar(Long id) {
-//		BaseResponse response = new BaseResponse();
-//
-//		if (id == null || id == 0) {
-//			response.StatusCode = 400;
-//			return response;
-//		}
-//
-//		_repository.deleteById(id);
-//		response.StatusCode = 200;
-//		return response;
-//	}
-
 	public BaseResponse transferencia(TransferenciaRequest transferenciaRequest) {
 		BaseResponse response = new BaseResponse();
 		Operacao operacao = new Operacao();
@@ -174,14 +92,10 @@ public class OperacaoService {
 		Conta listaOrigem = _contaRepository.findByHash(transferenciaRequest.getHashOrigem());
 
 		if (listaDestino == null) {
-			response.StatusCode = 404;
-			response.Message = "Conta destino não encontrada!";
-			return response;
+			return new BaseResponse(404, "Conta destino não encontrada!");
 		}
 		if (listaOrigem == null) {
-			response.StatusCode = 404;
-			response.Message = "Conta origem não encontrada!";
-			return response;
+			return new BaseResponse(404, "Conta origem não encontrada!");
 		}
 
 		operacao.setContaDestino(listaDestino);
@@ -190,9 +104,7 @@ public class OperacaoService {
 		operacao.setValor(transferenciaRequest.getValor());
 
 		_repository.save(operacao);
-		response.StatusCode = 200;
-		response.Message = "Transferencia realizada com sucesso!";
-		return response;
+		return new BaseResponse(200, "Transferencia realizada com sucesso!");
 
 	}
 

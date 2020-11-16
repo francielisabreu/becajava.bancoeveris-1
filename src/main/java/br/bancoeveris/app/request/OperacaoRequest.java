@@ -24,8 +24,4 @@ public class OperacaoRequest {
 	public void setHash(String hash) {
 		this.hash = hash;
 	}
-	
-
-		
-
 }
