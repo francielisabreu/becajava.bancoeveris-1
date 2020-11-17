@@ -21,12 +21,14 @@ public class ContaService {
 
 	public ContaResponse saldo(String hash, ContaResponse response) {
 		Conta conta = new Conta();
-		response.setStatusCode(400);
+		
 		
 		conta = _repository.findByHash(hash);
 
-		if (conta == null)
-			response.setMessage("Conta não encontrada!");		
+		if (conta == null) {
+			response.setMessage("Conta não encontrada!");	
+			response.setStatusCode(400);
+		}
 		
 		double saldo =  _operacaoService.saldo(conta.getId());
 		conta.setSaldo(saldo);
