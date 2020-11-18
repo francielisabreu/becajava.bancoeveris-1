@@ -39,7 +39,7 @@ public class OperacaoController extends BaseController {
 			return ResponseEntity.status(errorBase.getStatusCode()).body(errorBase);
 		}
     }
-	@PostMapping (path = "/tranferencia")
+	@PostMapping (path = "/transferencia")
     public ResponseEntity transferencia(@RequestBody TransferenciaRequest transferenciaSpec) {
 		try {
 			BaseResponse response = _service.transferencia(transferenciaSpec);

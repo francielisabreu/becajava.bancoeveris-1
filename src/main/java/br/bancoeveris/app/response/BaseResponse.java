@@ -1,18 +1,9 @@
 package br.bancoeveris.app.response;
 
 public class BaseResponse {
-		
-	private int statusCode;		
-	private String message;
-	
-	public BaseResponse() {
-		
-	}
-	
-	public BaseResponse(int statusCode, String message) {
-		this.statusCode = statusCode;
-		this.message = message;
-	}
+
+	public int statusCode;
+	public String message;
 
 	public int getStatusCode() {
 		return statusCode;

@@ -23,17 +23,18 @@ public class OperacaoService {
 	private ContaRepository _contaRepository;
 
 	public BaseResponse inserir(OperacaoRequest request) {
+		BaseResponse response = new BaseResponse();
 
 		Conta conta = _contaRepository.findByHash(request.getHash());
 
 		if (conta == null) {
-			return new BaseResponse(400, "Conta não encontrada!");
+			// return new BaseResponse(400, "Conta não encontrada!");
 		}
 		if (request.getTipo() == "") {
-			return new BaseResponse(400, "O Tipo da operação não foi preenchido.");
+			// return new BaseResponse(400, "O Tipo da operação não foi preenchido.");
 		}
 		if (request.getValor() == 0) {
-			return new BaseResponse(400, "O valor da operação não foi preenchido.");
+			// return new BaseResponse(400, "O valor da operação não foi preenchido.");
 		}
 		Operacao operacao = new Operacao();
 		operacao.setTipo(request.getTipo());
@@ -51,7 +52,7 @@ public class OperacaoService {
 		}
 
 		_repository.save(operacao);
-		return new BaseResponse(201, "Operacão inserida com sucesso.");
+		return response;
 	}
 
 	public double saldo(Long contaId) {
@@ -92,10 +93,10 @@ public class OperacaoService {
 		Conta listaOrigem = _contaRepository.findByHash(transferenciaRequest.getHashOrigem());
 
 		if (listaDestino == null) {
-			return new BaseResponse(404, "Conta destino não encontrada!");
+			// return new BaseResponse(404, "Conta destino não encontrada!");
 		}
 		if (listaOrigem == null) {
-			return new BaseResponse(404, "Conta origem não encontrada!");
+			// return new BaseResponse(404, "Conta origem não encontrada!");
 		}
 
 		operacao.setContaDestino(listaDestino);
@@ -104,7 +105,7 @@ public class OperacaoService {
 		operacao.setValor(transferenciaRequest.getValor());
 
 		_repository.save(operacao);
-		return new BaseResponse(200, "Transferencia realizada com sucesso!");
+		return response;
 
 	}
 

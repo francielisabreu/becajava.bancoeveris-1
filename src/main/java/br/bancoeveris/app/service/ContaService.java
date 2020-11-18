@@ -104,13 +104,13 @@ public class ContaService {
 		
 
 		if (contaRequest.getHash() == "") 
-			return  new BaseResponse(400,"O Hash da conta não foi preenchido.");
+			return  new ContaResponse(400,"O Hash da conta não foi preenchido.");
 		
 		if (contaRequest.getNumConta() == "")
-			return  new BaseResponse(400,"O número da conta não foi preenchido");
+			return  new ContaResponse(400,"O número da conta não foi preenchido");
 		
 		if (contaRequest.getAgencia() == "") 			
-			return  new BaseResponse(400,"A agencia da conta não foi preenchida");
+			return  new ContaResponse(400,"A agencia da conta não foi preenchida");
 		
 
 		conta.setId(id);
@@ -119,7 +119,7 @@ public class ContaService {
 		conta.setNumConta(contaRequest.getNumConta());
 		
 		_repository.save(conta);		
-		return  new BaseResponse(200,"Conta atualizada com sucesso.");
+		return  new ContaResponse(200,"Conta atualizada com sucesso.");
 	}
 
 }
